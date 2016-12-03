@@ -1,0 +1,71 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+##This analysis refers the data from UCI ML Reporistory for Diabeties detection in Females.
+
+### 1. Load required libraries. 'faraway' provides data needed for this analysis.
+```{r, message = FALSE}
+library(faraway)
+data(pima)
+
+library(dplyr)
+```
+
+###2. Check and Treat Missing values
+```{r}
+summary(pima)
+str(pima)
+
+sort(pima$diastolic)
+
+length(pima$diastolic[pima$diastolic == 0])
+pima %>% filter(diastolic == 0) %>% count
+# there are 35 patients with the Diastolic BP = 0. This seems to be like Zero being used for missing values. So, BP is not measured for 35 patients. But, BP is an important attribute.
+
+pima$diastolic[pima$diastolic == 0] <- NA
+pima$glucose[pima$glucose == 0] <- NA
+pima$triceps[pima$triceps == 0] <- NA
+pima$insulin[pima$insulin == 0] <- NA
+pima$bmi[pima$bmi == 0] <- NA
+
+# test is a categorical variable:
+pima$test <- factor(pima$test)
+
+summary(pima$test)
+
+levels(pima$test) <- c("negative", "positive")
+
+summary(pima)
+```
+
+###3. Check Graphical summaries
+
+```{r}
+#Histogram for Diastolic BP
+hist(pima$diastolic, main = "Histogram for Diastolic BP")
+
+#Density Plot
+plot(density(pima$diastolic, na.rm = TRUE), main= "Density Plot for Diastolic BP measurement")
+
+# index plot
+plot(sort(pima$diastolic, na.last = NA), type = "s", main= "Index Plot for Diastolic BP", ylab = "Sorted Diastolic BP")
+
+# Box plot
+boxplot(pima$diastolic)
+
+```
+
+#### 3(b): Bivariate plots
+
+```{r}
+par(mfrow=c(1,2))
+plot(diabetes ~ diastolic, pima, main = "Diabeties vs Diastolic")
+plot(diabetes ~ test, pima, main = "Diabeties vs Test results")
+
+pairs(pima)
+
+
+```
+
